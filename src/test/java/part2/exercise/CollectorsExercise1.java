@@ -25,6 +25,22 @@ public class CollectorsExercise1 {
                                 .max().orElse(0)
                 ));
 
+//                .collect(
+//                        toMap(
+//                                Employee::getPerson,
+//                                e -> e.getJobHistory().stream()
+//                                        .max(
+//                                                Comparator.comparingInt(
+//                                                        JobHistoryEntry::getDuration
+//                                                )
+//                                        ).orElseGet(
+//                                                () -> new JobHistoryEntry(0, "", "")
+//                                        ).getDuration()
+//                        )
+//                );
+
+        // can't manage to do it using Collectors.maxBy().
+
         Map<Person, Integer> expected = ImmutableMap.<Person, Integer>builder()
                 .put(new Person("John", "Galt", 20), 3)
                 .put(new Person("John", "Doe", 21), 4)
