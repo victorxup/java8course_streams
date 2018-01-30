@@ -8,6 +8,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Stream;
+import javafx.util.Pair;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
@@ -93,6 +97,29 @@ public class CollectorsExercise1 {
 
         //Implement custom Collector
         Map<String, Integer> collected = null;
+
+        collected = getEmployees().stream()
+                .flatMap(
+                        employee -> Stream.of(
+                                new Pair<>(employee.getPerson().getFirstName(),
+                                        employee.getJobHistory().stream()
+                                                .mapToInt(JobHistoryEntry::getDuration)
+                                                .sum()
+                                ),
+                                new Pair<>(employee.getPerson().getLastName(),
+                                        employee.getJobHistory().stream()
+                                                .mapToInt(JobHistoryEntry::getDuration)
+                                                .sum()
+                                )
+                        )
+                )
+                .collect(Collector.of(
+                        (Supplier<HashMap<String, Integer>>) HashMap::new,
+                        (map, o) -> map.merge(o.getKey(), o.getValue(), Integer::sum),
+                        (map1, map2) -> {
+                            map1.putAll(map2);
+                            return map1;
+                        }));
 
         Map<String, Integer> expected = ImmutableMap.<String, Integer>builder()
                 .put("John", 5 + 8 + 6 + 5 + 8 + 6 + 4 + 8 + 6 + 4 + 11 + 6 - 8 - 6)
