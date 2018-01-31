@@ -77,7 +77,7 @@ public class CollectorsExercise1 {
     public void testTotalJobDurationPerNameAndSurname(){
 
         //Implement custom Collector
-        Map<String, Integer> collected = null; getEmployees().stream()
+        Map<String, Integer> collected = getEmployees().stream()
                 .flatMap(e -> Stream.of(
                         new Pair<>(
                                 e.getPerson().getFirstName(),
@@ -87,12 +87,11 @@ public class CollectorsExercise1 {
                                 e.getPerson().getLastName(),
                                 e.getJobHistory().stream().map(JobHistoryEntry::getDuration)
                                         .reduce(0, Integer::sum))
-                        )
-                        .collect(toMap(
-                                Pair::getKey,
-                                Pair::getValue,
-                                (d1, d2) -> d1 + d2)
-                        )
+                        ))
+                .collect(toMap(
+                        Pair::getKey,
+                        Pair::getValue,
+                        (d1, d2) -> d1 + d2)
                 );
 
         Map<String, Integer> expected = ImmutableMap.<String, Integer>builder()
