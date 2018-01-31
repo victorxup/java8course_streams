@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import data.Employee;
 import data.JobHistoryEntry;
 import data.Person;
+import javafx.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -75,10 +77,22 @@ public class CollectorsExercise1 {
     public void testTotalJobDurationPerNameAndSurname(){
 
         //Implement custom Collector
-        Map<String, Integer> collected = getEmployees().stream()
-                .collect(toMap(
-                        e -> e.getPerson().getFirstName(),
-                        e -> e.getJobHistory().stream().map(JobHistoryEntry::getDuration).reduce(0, Integer::sum))
+        Map<String, Integer> collected = null; getEmployees().stream()
+                .flatMap(e -> Stream.of(
+                        new Pair<>(
+                                e.getPerson().getFirstName(),
+                                e.getJobHistory().stream().map(JobHistoryEntry::getDuration)
+                                        .reduce(0, Integer::sum)),
+                        new Pair<>(
+                                e.getPerson().getLastName(),
+                                e.getJobHistory().stream().map(JobHistoryEntry::getDuration)
+                                        .reduce(0, Integer::sum))
+                        )
+                        .collect(toMap(
+                                Pair::getKey,
+                                Pair::getValue,
+                                (d1, d2) -> d1 + d2)
+                        )
                 );
 
         Map<String, Integer> expected = ImmutableMap.<String, Integer>builder()
