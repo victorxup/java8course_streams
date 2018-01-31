@@ -7,17 +7,24 @@ import data.Person;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toMap;
 
 public class CollectorsExercise1 {
 
     @Test
     public void testPersonToHisLongestJobDuration() {
 
-        Map<Person, Integer> collected = null;//getEmployees()
+        Map<Person, Object> collected = getEmployees().stream()
+                .collect(toMap(
+                        Employee::getPerson,
+                        e -> e.getJobHistory().stream().map(JobHistoryEntry::getDuration).reduce(Integer::max).get())
+                );
+
 
         Map<Person, Integer> expected = ImmutableMap.<Person, Integer>builder()
                 .put(new Person("John", "Galt", 20), 3)
@@ -39,7 +46,11 @@ public class CollectorsExercise1 {
     @Test
     public void testPersonToHisTotalJobDuration() {
 
-        Map<Person, Integer> collected = null;
+        Map<Person, Integer> collected = getEmployees().stream()
+                .collect(toMap(
+                        Employee::getPerson,
+                        e -> e.getJobHistory().stream().map(JobHistoryEntry::getDuration).reduce(0, Integer::sum))
+                );
 
 
         Map<Person, Integer> expected = ImmutableMap.<Person, Integer>builder()
@@ -64,7 +75,11 @@ public class CollectorsExercise1 {
     public void testTotalJobDurationPerNameAndSurname(){
 
         //Implement custom Collector
-        Map<String, Integer> collected = null;
+        Map<String, Integer> collected = getEmployees().stream()
+                .collect(toMap(
+                        e -> e.getPerson().getFirstName(),
+                        e -> e.getJobHistory().stream().map(JobHistoryEntry::getDuration).reduce(0, Integer::sum))
+                );
 
         Map<String, Integer> expected = ImmutableMap.<String, Integer>builder()
                 .put("John", 5 + 8 + 6 + 5 + 8 + 6 + 4 + 8 + 6 + 4 + 11 + 6 - 8 - 6)
