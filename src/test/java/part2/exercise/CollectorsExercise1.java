@@ -10,8 +10,10 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
@@ -88,10 +90,10 @@ public class CollectorsExercise1 {
                                 e.getJobHistory().stream().map(JobHistoryEntry::getDuration)
                                         .reduce(0, Integer::sum))
                         ))
-                .collect(toMap(
-                        Pair::getKey,
-                        Pair::getValue,
-                        (d1, d2) -> d1 + d2)
+                .collect(Collector.of(
+                        HashMap<String, Integer>::new,
+                        (map, e) -> map.merge(e.getKey(), e.getValue(), Integer::sum),
+                        (map1, map2) -> {map1.putAll(map2); return map1;})
                 );
 
         Map<String, Integer> expected = ImmutableMap.<String, Integer>builder()
